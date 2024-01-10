@@ -306,7 +306,7 @@ class CommunicationSessionHandler:
 
         logger.info("Communication session handler started")
 
-        await wait_for_tasks(self.list_of_tasks)
+        await wait_for_tasks(self.list_of_tasks, asyncio.ALL_COMPLETED)
 
     async def send_sdp(self):
         """
@@ -555,7 +555,8 @@ class CommunicationSessionHandler:
                             await self.restart_sdp(True)
                         except SDPFailedError as exc:
                             logger.exception(exc)
-                            # TODO not sure what else to do here
+                    if not self.config.is_alive_after_session:
+                        break
                 else:
                     logger.warning(
                         "Communication session handler received "
